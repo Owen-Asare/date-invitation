@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A Little Question ❤️</title>
+  <style>
+    :root {
+      --pink: #ff4f87;
+      --deep-pink: #e83270;
+      --cream: #fff7f9;
+      --ink: #33232b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 15% 15%, #ffe0eb 0, transparent 30%),
+        radial-gradient(circle at 85% 85%, #ffd2e2 0, transparent 32%),
+        var(--cream);
+      overflow-x: hidden;
+    }
+    .card {
+      width: min(100%, 560px);
+      padding: clamp(24px, 6vw, 44px);
+      text-align: center;
+      background: rgba(255,255,255,.92);
+      border: 1px solid #ffd3e0;
+      border-radius: 28px;
+      box-shadow: 0 18px 60px rgba(170, 48, 91, .13);
+    }
+    .heart { font-size: 54px; animation: beat 1.25s infinite; }
+    @keyframes beat { 50% { transform: scale(1.12); } }
+    h1 { margin: 10px 0 12px; font-size: clamp(2rem, 7vw, 3rem); line-height: 1.1; }
+    p { line-height: 1.6; }
+    .subtitle { color: #775d68; margin: 0 auto 28px; max-width: 420px; }
+    .buttons {
+      min-height: 72px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      position: relative;
+    }
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 13px 25px;
+      font: inherit;
+      font-weight: 750;
+      cursor: pointer;
+      transition: transform .15s, box-shadow .15s, background .15s;
+    }
+    button:focus-visible, input:focus-visible { outline: 3px solid #9b4bff; outline-offset: 3px; }
+    .yes { color: white; background: var(--pink); box-shadow: 0 8px 18px #ff4f8738; }
+    .yes:hover { background: var(--deep-pink); transform: translateY(-2px); }
+    .no { color: #59434d; background: #f3edf0; }
+    .note { min-height: 24px; font-size: .9rem; color: #9a4967; margin-top: 14px; }
+    .hidden { display: none !important; }
+    .date-panel { margin-top: 28px; text-align: left; }
+    .date-panel h2 { text-align: center; margin-bottom: 8px; }
+    .date-panel > p { text-align: center; color: #775d68; margin-top: 0; }
+    .date-list { display: grid; gap: 10px; margin: 20px 0; }
+    .date-option {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 13px 15px; border: 1px solid #f2c5d5; border-radius: 14px;
+      cursor: pointer; background: #fffafd;
+    }
+    .date-option:has(input:checked) { border-color: var(--pink); background: #fff0f5; }
+    .date-option input { margin-top: 5px; accent-color: var(--pink); }
+    .date-option strong { display: block; }
+    .date-option small { color: #806a74; }
+    .custom-date { width: 100%; margin: 8px 0 14px; padding: 12px; border: 1px solid #e6c8d3; border-radius: 12px; font: inherit; }
+    .send { display: block; width: 100%; color: white; background: #382a33; }
+    .send:hover { background: #57414e; }
+    .result { margin-top: 16px; padding: 14px; border-radius: 12px; background: #f7f0f3; overflow-wrap: anywhere; }
+    .tiny { font-size: .78rem; color: #8a7480; margin-top: 24px; }
+    .confetti { position: fixed; top: -20px; pointer-events: none; animation: fall 3s linear forwards; }
+    @keyframes fall { to { transform: translateY(110vh) rotate(700deg); opacity: 0; } }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <section id="question">
+      <div class="heart" aria-hidden="true">💗</div>
+      <p style="font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:#e83270; font-size:.78rem;">Incoming request · 001</p>
+      <h1>Hey, beautiful ❤️</h1>
+      <p class="subtitle">I have a very important question for you… Would you let me take you on a date? 🥹🌹</p>
+      <div class="buttons" id="buttonArea">
+        <button class="yes" id="yesBtn">YES! 💖</button>
+        <button class="no" id="noBtn">No 🙈</button>
+      </div>
+      <div class="note" id="note" aria-live="polite">Please choose wisely… 😉</div>
+      <p class="tiny">Built with ❤️, a little JavaScript, and a lot of hope.</p>
+    </section>
+
+    <section id="datePanel" class="date-panel hidden">
+      <div class="heart" aria-hidden="true" style="text-align:center;">🥰</div>
+      <h1 style="text-align:center;">I knew you'd say yes!</h1>
+      <p>Now let's find a day that works for you. Select every date you're available.</p>
+      <form id="dateForm">
+        <div class="date-list" id="dateList"></div>
+        <label for="customDate"><strong>Or suggest another date:</strong></label>
+        <input class="custom-date" id="customDate" type="date" />
+        <label for="timeChoice"><strong>Preferred time (optional):</strong></label>
+        <select class="custom-date" id="timeChoice">
+          <option value="">I'm flexible 😊</option>
+          <option>Afternoon</option>
+          <option>Evening</option>
+          <option>Let's decide together</option>
+        </select>
+        <label for="extraNote"><strong>Any date idea or note? (optional)</strong></label>
+        <textarea class="custom-date" id="extraNote" rows="3" placeholder="Somewhere cute, maybe? 💕"></textarea>
+        <button class="send" type="submit">Send my availability 💌</button>
+      </form>
+      <div id="result" class="result hidden" aria-live="polite"></div>
+      <p class="tiny" style="text-align:center;">This page doesn't send anything to a server. It will prepare a message for you to copy or share.</p>
+    </section>
+  </main>
+
+  <script>
+    // Edit these suggested dates to match when you'd like to go out.
+    // The page automatically shows the next four upcoming days.
+    const dateList = document.getElementById("dateList");
+    const dateFormatter = new Intl.DateTimeFormat("en-GH", {
+      weekday: "long", day: "numeric", month: "long"
+    });
+
+    for (let i = 1; i <= 4; i++) {
+      const date = new Date();
+      date.setDate(date.getDate() + i);
+      const iso = [
+        date.getFullYear(),
+        String(date.getMonth() + 1).padStart(2, "0"),
+        String(date.getDate()).padStart(2, "0")
+      ].join("-");
+      const label = document.createElement("label");
+      label.className = "date-option";
+      label.innerHTML = `
+        <input type="checkbox" name="availableDate" value="${iso}">
+        <span><strong>${dateFormatter.format(date)}</strong><small>${iso}</small></span>
+      `;
+      dateList.appendChild(label);
+    }
+
+    const noBtn = document.getElementById("noBtn");
+    const buttonArea = document.getElementById("buttonArea");
+    const note = document.getElementById("note");
+    const playfulMessages = [
+      "Hmm… that button seems a little shy 😅",
+      "Are you sure? My heart is buffering… 💓",
+      "404: 'No' not found 😂",
+      "The 'Yes' button is looking pretty good, though 👀"
+    ];
+    let attempts = 0;
+
+    function moveNoButton() {
+      const area = buttonArea.getBoundingClientRect();
+      const btn = noBtn.getBoundingClientRect();
+      // Move the button to a random spot within the visible viewport.
+      const maxX = Math.max(0, window.innerWidth - btn.width - 16);
+      const maxY = Math.max(0, window.innerHeight - btn.height - 16);
+      noBtn.style.position = "fixed";
+      noBtn.style.left = `${Math.max(8, Math.random() * maxX)}px`;
+      noBtn.style.top = `${Math.max(8, Math.random() * maxY)}px`;
+      noBtn.style.zIndex = "10";
+      note.textContent = playfulMessages[attempts % playfulMessages.length];
+      attempts++;
+    }
+
+    noBtn.addEventListener("pointerenter", moveNoButton);
+    noBtn.addEventListener("click", (event) => {
+      event.preventDefault();
+      moveNoButton();
+    });
+    noBtn.addEventListener("focus", moveNoButton);
+
+    document.getElementById("yesBtn").addEventListener("click", () => {
+      document.getElementById("question").classList.add("hidden");
+      document.getElementById("datePanel").classList.remove("hidden");
+      noBtn.style.display = "none";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      for (let i = 0; i < 28; i++) {
+        const piece = document.createElement("span");
+        piece.className = "confetti";
+        piece.textContent = ["💗", "💖", "✨", "💕"][Math.floor(Math.random() * 4)];
+        piece.style.left = `${Math.random() * 100}vw`;
+        piece.style.animationDelay = `${Math.random() * 0.8}s`;
+        piece.style.fontSize = `${14 + Math.random() * 16}px`;
+        document.body.appendChild(piece);
+        setTimeout(() => piece.remove(), 4000);
+      }
+    });
+
+    document.getElementById("dateForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const selected = [...document.querySelectorAll('input[name="availableDate"]:checked')]
+        .map(input => input.value);
+      const custom = document.getElementById("customDate").value;
+      if (custom && !selected.includes(custom)) selected.push(custom);
+
+      const prettyDates = selected.map(value => {
+        const [y, m, d] = value.split("-").map(Number);
+        return dateFormatter.format(new Date(y, m - 1, d));
+      });
+
+      const time = document.getElementById("timeChoice").value || "Flexible";
+      const extra = document.getElementById("extraNote").value.trim() || "No extra note";
+      const message = [
+        "Yesss! 💖 Here's when I'm available for our date:",
+        prettyDates.length ? prettyDates.map(d => `• ${d}`).join("\n") : "I haven't picked a date yet — let's decide together!",
+        `Preferred time: ${time}`,
+        `Note: ${extra}`,
+        "Can't wait 🥰"
+      ].join("\n");
+
+      const result = document.getElementById("result");
+      result.classList.remove("hidden");
+      result.innerHTML = "";
+      const messageText = document.createElement("pre");
+      messageText.style.whiteSpace = "pre-wrap";
+      messageText.style.font = "inherit";
+      messageText.textContent = message;
+      const copyButton = document.createElement("button");
+      copyButton.className = "yes";
+      copyButton.type = "button";
+      copyButton.textContent = "Copy message";
+      copyButton.style.marginTop = "10px";
+      copyButton.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(message);
+          copyButton.textContent = "Copied! 💗";
+        } catch {
+          copyButton.textContent = "Please select and copy the message above";
+        }
+      });
+      const shareButton = document.createElement("button");
+      shareButton.type = "button";
+      shareButton.className = "send";
+      shareButton.textContent = "Share message";
+      shareButton.style.marginTop = "10px";
+      shareButton.addEventListener("click", async () => {
+        if (navigator.share) {
+          try { await navigator.share({ title: "Our date 💗", text: message }); } catch {}
+        } else {
+          window.location.href = `https://wa.me/?text=${encodeURIComponent(message)}`;
+        }
+      });
+      result.append(messageText, copyButton, shareButton);
+      result.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    });
+  </script>
+</body>
+</html>
